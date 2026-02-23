@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BEUShareBox – Ürün Paylaşım Platformu</title>
+  <meta name="description" content="BEUShareBox – Bitlis Eren Üniversitesi mini ürün paylaşım platformu. Ürün ekle, beğen, yorum yap." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">📦</span>
+        <span class="logo-text">BEU<span class="accent">Share</span>Box</span>
+      </div>
+
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input
+          id="searchInput"
+          type="text"
+          class="search-input"
+          placeholder="Ürün ara..."
+          autocomplete="off"
+        />
+        <button id="clearSearch" class="clear-search" title="Temizle">✕</button>
+      </div>
+
+      <button id="openAddModal" class="btn-primary">
+        <span>+</span> Ürün Ekle
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main-content">
+
+    <!-- Category Filter -->
+    <section class="filter-section">
+      <div class="filter-label">Kategoriler</div>
+      <div class="category-pills" id="categoryPills">
+        <button class="pill active" data-cat="all">🌐 Tümü</button>
+        <button class="pill" data-cat="Elektronik">💻 Elektronik</button>
+        <button class="pill" data-cat="Giyim">👕 Giyim</button>
+        <button class="pill" data-cat="Kitap">📚 Kitap</button>
+        <button class="pill" data-cat="Gıda">🍔 Gıda</button>
+        <button class="pill" data-cat="Spor">⚽ Spor</button>
+        <button class="pill" data-cat="Diğer">📦 Diğer</button>
+      </div>
+      <div class="result-info" id="resultInfo"></div>
+    </section>
+
+    <!-- Product Grid -->
+    <section class="product-grid" id="productGrid">
+      <!-- Cards rendered by JS -->
+    </section>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <div class="empty-icon">🔍</div>
+      <h3>Ürün bulunamadı</h3>
+      <p>Farklı bir arama veya kategori deneyin.</p>
+    </div>
+
+  </main>
+
+  <!-- ===== ADD PRODUCT MODAL ===== -->
+  <div class="modal-overlay" id="addModalOverlay">
+    <div class="modal" id="addModal">
+      <div class="modal-header">
+        <h2 class="modal-title">📦 Yeni Ürün Ekle</h2>
+        <button class="modal-close" id="closeAddModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="addProductForm" novalidate>
+
+          <div class="form-group">
+            <label for="inputTitle">Ürün Adı *</label>
+            <input id="inputTitle" type="text" placeholder="ör. iPhone 15 Pro" maxlength="80" />
+            <span class="form-error" id="errTitle"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="inputDesc">Açıklama *</label>
+            <textarea id="inputDesc" rows="3" placeholder="Ürün hakkında kısa bir açıklama..." maxlength="300"></textarea>
+            <span class="form-error" id="errDesc"></span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inputPrice">Fiyat (₺) *</label>
+              <input id="inputPrice" type="number" min="0" step="0.01" placeholder="0.00" />
+              <span class="form-error" id="errPrice"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="inputCategory">Kategori *</label>
+              <select id="inputCategory">
+                <option value="">Seçiniz...</option>
+                <option value="Elektronik">💻 Elektronik</option>
+                <option value="Giyim">👕 Giyim</option>
+                <option value="Kitap">📚 Kitap</option>
+                <option value="Gıda">🍔 Gıda</option>
+                <option value="Spor">⚽ Spor</option>
+                <option value="Diğer">📦 Diğer</option>
+              </select>
+              <span class="form-error" id="errCat"></span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputImage">Görsel URL (isteğe bağlı)</label>
+            <input id="inputImage" type="url" placeholder="https://..." />
+          </div>
+
+          <div class="form-group">
+            <label for="inputAuthor">Paylaşan Adı *</label>
+            <input id="inputAuthor" type="text" placeholder="Adınız" maxlength="40" />
+            <span class="form-error" id="errAuthor"></span>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-ghost" id="cancelAddModal">İptal</button>
+            <button type="submit" class="btn-primary" id="submitProduct">Paylaş 🚀</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PRODUCT DETAIL MODAL ===== -->
+  <div class="modal-overlay" id="detailModalOverlay">
+    <div class="modal modal-lg" id="detailModal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="detailTitle">Ürün Detayı</h2>
+        <button class="modal-close" id="closeDetailModal">✕</button>
+      </div>
+      <div class="modal-body detail-body">
+
+        <div class="detail-top">
+          <div class="detail-img-wrap">
+            <img id="detailImage" src="" alt="Ürün görseli" class="detail-img" />
+          </div>
+          <div class="detail-info">
+            <div class="detail-category" id="detailCategory"></div>
+            <p class="detail-desc" id="detailDesc"></p>
+            <div class="detail-price" id="detailPrice"></div>
+            <div class="detail-meta" id="detailMeta"></div>
+            <div class="detail-actions">
+              <button class="btn-like detail-like-btn" id="detailLikeBtn">
+                <span class="like-icon">🤍</span>
+                <span class="like-count" id="detailLikeCount">0</span> Beğeni
+              </button>
+              <button class="btn-danger-sm" id="detailDeleteBtn">🗑️ Sil</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="comments-section">
+          <h3 class="comments-title">💬 Yorumlar (<span id="commentCount">0</span>)</h3>
+
+          <div class="comments-list" id="commentsList">
+            <!-- rendered by JS -->
+          </div>
+
+          <div class="comment-form">
+            <input id="commentAuthor" type="text" placeholder="Adınız" maxlength="40" />
+            <textarea id="commentText" rows="2" placeholder="Yorumunuzu yazın..." maxlength="300"></textarea>
+            <button class="btn-primary btn-sm" id="submitComment">Yorum Yap 💬</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
